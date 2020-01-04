@@ -10,14 +10,21 @@ max_insert = 20
 
 # a database session
 def worker(userid, insert_cnt = 1, update_cnt = 1, delete_cnt = 1):
-    trx = ora_trx.Trx(trx_userid=userid)
-    trx.import_words('/usr/share/dict/cracklib-small')
-    trx.insert_trx(cnt = insert_cnt)
-    trx.update_trx(cnt = update_cnt)
-    trx.delete_trx(cnt = delete_cnt)
-    trx.commit()
-    trx.close()
-
+    try:
+        trx = ora_trx.Trx(trx_userid=userid)
+    except Exception:
+        print(f'database connection error')
+    else:
+        try:
+            trx.import_words('/usr/share/dict/cracklib-small')
+            trx.insert_trx(cnt = insert_cnt)
+            trx.update_trx(cnt = update_cnt)
+            trx.delete_trx(cnt = delete_cnt)
+            trx.commit()
+        except Exception:
+            print('DML error')
+        finally:
+            trx.close()
 
 """
 trx = ora_trx.Trx(trx_userid=2)

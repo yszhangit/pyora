@@ -45,11 +45,16 @@ class Trx(cx_Oracle.Connection):
         self.userid = trx_userid
         if cred == None:
             cred = 'trx/trxpw@testdb_dga'
-        super().__init__(cred)
+        try:
+            super().__init__(cred)
+        except Exception:
+            print(f'unable to connect as {cred}')
+            raise Exception
+        else:
         #self.username
         # row limit option available after 12.1
-        if self.version < '12':
-            print(f"warning, database version {self.version} does not support row limit")
+            if self.version < '12':
+                print(f"warning, database version {self.version} does not support row limit")
         #return conn
 #        return super().__init__(cred)
 
