@@ -4,6 +4,7 @@ import ora_trx
 import concurrent.futures
 import time
 import random
+import argparse
 
 max_insert = 20
 
@@ -50,7 +51,11 @@ def batch():
         results = executor.map(worker, userids, insert_cnts, update_cnts, delete_cnts)
 
 def main():
-    for i in range(1,10):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-b', '--batch', type = int, required = False, default = 10, help="number of batch run, default 10")
+    args = parser.parse_args()
+    n = args.batch
+    for i in range(1,n+1):
         start_time = time.time()
         batch()
         end_time = time.time()
