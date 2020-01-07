@@ -5,8 +5,8 @@ import concurrent.futures
 import time
 import random
 import argparse
+import yaml
 
-max_insert = 20
 
 # a database session
 def worker(userid, insert_cnt = 1, update_cnt = 1, delete_cnt = 1):
@@ -58,16 +58,32 @@ def batch():
         results = executor.map(worker, userids, insert_cnts, update_cnts, delete_cnts)
 
 def main():
+    # receive number of batches from command line
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--batch', type = int, required = False, default = 10, help="number of batch run, default 10")
     args = parser.parse_args()
     n = args.batch
+
+    # import config
+    try:
+        with open('trx_conf.yml','r') as conffile:
+            cfg = yaml.load(conffile)
+    except FileNotFoundError:
+        print("cant not find config file")
+        sys.exit(1)
+    else:
+        batch_pause_min = cfg['batch_pause_min']
+        batch_pause_max = cfg['batch_pause_max']
+        max_insert = cfg['max_insert']
+
     for i in range(1,n+1):
         start_time = time.time()
         batch()
         end_time = time.time()
         print(f'batch {i} finished, elapsed { round(end_time - start_time,2)} seconds')
-        time.sleep(random.randint(60,600)) # sleep between 1 to 10min
+        batch_pause = random.randint(batch_pause_min,batch_pause_max)
+        print(f'pause before next batch for { batch_pause } seconds')
+        time.sleep(batch_pause)
 
 if __name__ == '__main__':
     main()

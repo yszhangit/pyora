@@ -1,0 +1,6 @@
+# pause between batches, in seconds, sampled by randint
+batch_pause_min: 10
+batch_pause_max: 120
+# max # of insert DML by one user in a batch
+# update and delete will use this value as upper bound to randomly update/delete
+max_insert: 20
