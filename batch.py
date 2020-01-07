@@ -67,6 +67,7 @@ def main():
         batch()
         end_time = time.time()
         print(f'batch {i} finished, elapsed { round(end_time - start_time,2)} seconds')
+        time.sleep(random.randint(60,600)) # sleep between 1 to 10min
 
 if __name__ == '__main__':
     main()
