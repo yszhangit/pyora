@@ -44,7 +44,7 @@ trx.commit()
 trx.close()
 """
 
-def batch():
+def batch(max_insert=20):
     # worker(2, 10, 5, 7)   # test with 1 process
     userids = range(1,11)
     # list of worker insert count
@@ -58,6 +58,7 @@ def batch():
         results = executor.map(worker, userids, insert_cnts, update_cnts, delete_cnts)
 
 def main():
+    import pdb
     # receive number of batches from command line
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--batch', type = int, required = False, default = 10, help="number of batch run, default 10")
@@ -67,7 +68,7 @@ def main():
     # import config
     try:
         with open('trx_conf.yml','r') as conffile:
-            cfg = yaml.load(conffile)
+            cfg = yaml.safe_load(conffile)
     except FileNotFoundError:
         print("cant not find config file")
         sys.exit(1)
@@ -78,7 +79,7 @@ def main():
 
     for i in range(1,n+1):
         start_time = time.time()
-        batch()
+        batch(max_insert)
         end_time = time.time()
         print(f'batch {i} finished, elapsed { round(end_time - start_time,2)} seconds')
         batch_pause = random.randint(batch_pause_min,batch_pause_max)
